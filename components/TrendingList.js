@@ -31,12 +31,8 @@ export default function TrendingList({ tokens, chain = 'solana' }) {
 
   return (
     <div>
-      {tokens.map((t) => (
-        <Link
-          key={t.poolAddress}
-          href={`/token/${t.poolAddress}?chain=${chain}`}
-          style={{ textDecoration: 'none', color: 'inherit' }}
-        >
+      {tokens.map((t) => {
+        const content = (
           <div
             style={{
               display: 'flex', alignItems: 'center', gap: 10,
@@ -72,8 +68,20 @@ export default function TrendingList({ tokens, chain = 'solana' }) {
               <div style={{ fontSize: 10.5, color: 'var(--text-dim)' }}>MC {fmtUsd(t.fdv)}</div>
             </div>
           </div>
-        </Link>
-      ))}
+        );
+
+        // Nếu không trích được địa chỉ mint (dữ liệu GeckoTerminal thiếu relationships),
+        // KHÔNG dẫn người dùng tới trang lỗi — hiện dạng không bấm được thay vì link hỏng.
+        if (!t.mint) {
+          return <div key={t.poolAddress} style={{ opacity: 0.6, cursor: 'not-allowed' }}>{content}</div>;
+        }
+
+        return (
+          <Link key={t.poolAddress} href={`/token/${t.mint}?chain=${chain}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            {content}
+          </Link>
+        );
+      })}
     </div>
   );
 }
