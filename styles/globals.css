@@ -1,0 +1,36 @@
+:root {
+  --bg: #F6F8F6;
+  --surface: #FFFFFF;
+  --surface-2: #EEF3EE;
+  --border: #DCE5DC;
+  --text: #1A1D1B;
+  --text-muted: #666F68;
+  --text-dim: #98A398;
+  --primary: #00A63C;
+  --primary-dim: rgba(0,166,60,0.10);
+  --red: #D33B40;
+  --red-dim: rgba(211,59,64,0.09);
+  --teal: #0E8F9E;
+  --teal-dim: rgba(14,143,158,0.10);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.badge-safe { color: var(--teal); background: var(--teal-dim); }
+.badge-caution { color: var(--primary); background: var(--primary-dim); }
+.badge-danger { color: var(--red); background: var(--red-dim); }

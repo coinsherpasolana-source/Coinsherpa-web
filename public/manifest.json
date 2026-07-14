@@ -1,0 +1,13 @@
+{
+  "name": "Coinsherpa — Người dẫn đường on-chain",
+  "short_name": "Coinsherpa",
+  "description": "Nền tảng phân tích on-chain cho người Việt mới vào crypto trên Solana",
+  "start_url": "/newbie",
+  "display": "standalone",
+  "background_color": "#F6F8F6",
+  "theme_color": "#00A63C",
+  "icons": [
+    { "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

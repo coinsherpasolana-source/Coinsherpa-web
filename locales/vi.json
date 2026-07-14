@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "name": "Coinsherpa",
+    "tagline": "Người dẫn đường on-chain"
+  },
+  "common": {
+    "connectWallet": "Kết nối ví",
+    "checkToken": "Kiểm tra token",
+    "pasteAddress": "Dán địa chỉ mint token vào đây…",
+    "loading": "Đang tải…",
+    "price": "Giá",
+    "fdv": "FDV",
+    "marketCap": "Vốn hóa",
+    "totalSupply": "Tổng cung",
+    "liquidity": "Thanh khoản"
+  },
+  "risk": {
+    "safe": "An toàn",
+    "caution": "Thận trọng",
+    "danger": "Nguy hiểm",
+    "mintOpen": "Dev CÓ THỂ in thêm token",
+    "mintLocked": "Đã khóa — không thể in thêm",
+    "freezeOpen": "Dev CÓ THỂ đóng băng ví người mua",
+    "freezeLocked": "Đã khóa — không thể đóng băng ví bạn"
+  },
+  "persona": {
+    "newbie": "Người mới",
+    "trader": "Trader",
+    "kol": "KOL / Dev"
+  },
+  "disclaimer": "Nền tảng này chỉ nhằm mục đích giáo dục, không phải lời khuyên đầu tư. Giao dịch crypto tiềm ẩn rủi ro mất vốn cao."
+}

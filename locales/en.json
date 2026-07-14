@@ -1,0 +1,32 @@
+{
+  "brand": {
+    "name": "Coinsherpa",
+    "tagline": "Your guide on-chain"
+  },
+  "common": {
+    "connectWallet": "Connect Wallet",
+    "checkToken": "Check Token",
+    "pasteAddress": "Paste a Solana token mint address…",
+    "loading": "Loading…",
+    "price": "Price",
+    "fdv": "FDV",
+    "marketCap": "Market Cap",
+    "totalSupply": "Total Supply",
+    "liquidity": "Liquidity"
+  },
+  "risk": {
+    "safe": "Safe",
+    "caution": "Caution",
+    "danger": "Danger",
+    "mintOpen": "Dev CAN mint more tokens",
+    "mintLocked": "Locked — cannot mint more",
+    "freezeOpen": "Dev CAN freeze buyer wallets",
+    "freezeLocked": "Locked — cannot freeze your wallet"
+  },
+  "persona": {
+    "newbie": "Newbie",
+    "trader": "Trader",
+    "kol": "KOL / Dev"
+  },
+  "disclaimer": "This platform is for educational purposes only and is not financial advice. Trading crypto carries substantial risk of loss."
+}
