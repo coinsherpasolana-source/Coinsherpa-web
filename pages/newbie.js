@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import TokenCard from '../components/TokenCard';
 import TrendingList from '../components/TrendingList';
 import { getDictionary } from '../lib/i18n';
@@ -10,21 +10,6 @@ export default function NewbiePage() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const [trending, setTrending] = useState([]);
-  const [trendingLoading, setTrendingLoading] = useState(true);
-  const [trendingError, setTrendingError] = useState(null);
-
-  useEffect(() => {
-    fetch('/api/trending?chain=solana')
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.error) throw new Error(data.error);
-        setTrending(data.tokens || []);
-      })
-      .catch((err) => setTrendingError(err.message))
-      .finally(() => setTrendingLoading(false));
-  }, []);
 
   async function handleCheck() {
     if (!mint.trim()) return;
@@ -67,19 +52,10 @@ export default function NewbiePage() {
       {error && <p style={{ color: 'var(--red)' }}>{error}</p>}
       {profile && <TokenCard profile={profile} level="simple" dict={dict} />}
 
-      {/* Danh sách Trending — mở web là thấy dữ liệu ngay, không phải màn hình trống */}
+      {/* Danh sách Trending/New/Top — mở web là thấy dữ liệu ngay */}
       {!profile && (
         <div style={{ marginTop: 8 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: 'var(--text-muted)' }}>
-            🔥 Đang Trending — Solana
-          </div>
-          {trendingLoading && <p style={{ fontSize: 13, color: 'var(--text-dim)' }}>Đang tải…</p>}
-          {trendingError && <p style={{ fontSize: 13, color: 'var(--red)' }}>{trendingError}</p>}
-          {!trendingLoading && !trendingError && (
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-              <TrendingList tokens={trending.slice(0, 20)} chain="solana" />
-            </div>
-          )}
+          <TrendingList chain="solana" />
         </div>
       )}
 
