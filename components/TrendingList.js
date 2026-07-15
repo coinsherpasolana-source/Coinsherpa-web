@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { formatCompactPrice, formatCompactNumber, formatAge } from '../lib/formatDisplay';
 
@@ -36,6 +37,7 @@ function PriceDisplay({ price }) {
 // GHI CHÚ TRUNG THỰC: khung "5 phút" và "6 giờ" của Trending là XẤP XỈ (dùng dữ liệu
 // 1h/24h sẵn có), vì GeckoTerminal (nguồn miễn phí) không trả về đúng 2 khung này.
 export default function TrendingList({ chain = 'solana' }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('trending');
   const [pickerOpen, setPickerOpen] = useState(false);
   const [trendingTf, setTrendingTf] = useState('24h');
@@ -51,6 +53,13 @@ export default function TrendingList({ chain = 'solana' }) {
     setLoading(true);
     setError(null);
     try {
+      if (mode === 'bluechip') {
+        const res = await fetch(`/api/blue-chip`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        setTokens(data.tokens || []);
+        return;
+      }
       const params = new URLSearchParams({ chain, mode, sortBy: sortBy || 'volume', count: String(desiredCount) });
       const res = await fetch(`/api/trending?${params.toString()}`);
       const data = await res.json();
@@ -70,6 +79,11 @@ export default function TrendingList({ chain = 'solana' }) {
   }, []);
 
   function handleTabClick(tab) {
+    if (tab === 'bluechip') {
+      setActiveTab('bluechip');
+      loadTokens('bluechip');
+      return;
+    }
     setActiveTab(tab);
     setPickerOpen(true);
   }
@@ -96,6 +110,20 @@ export default function TrendingList({ chain = 'solana' }) {
     loadTokens(mode, sortBy, 200);
   }
 
+  async function handleBlueChipClick(coinGeckoId) {
+    try {
+      const res = await fetch(`/api/blue-chip?resolveMint=${coinGeckoId}`);
+      const data = await res.json();
+      if (data.mint) {
+        router.push(`/token/${data.mint}?chain=solana`);
+      } else {
+        alert('Token này chưa xác định được địa chỉ Solana (có thể không phải token gốc Solana).');
+      }
+    } catch (err) {
+      alert('Không tra được địa chỉ token: ' + err.message);
+    }
+  }
+
   const displayTokens =
     activeTab === 'trending'
       ? [...tokens].sort((a, b) => {
@@ -107,21 +135,22 @@ export default function TrendingList({ chain = 'solana' }) {
           const windowMs = { '1h': 3600000, '6h': 21600000, '24h': 86400000 }[newWindow];
           return t.poolCreatedAt && Date.now() - t.poolCreatedAt <= windowMs;
         })
-      : tokens;
+      : tokens; // 'top' và 'bluechip' giữ nguyên thứ tự server đã xếp sẵn
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
         {[
           { key: 'trending', label: activeTab === 'trending' ? `🔥 Trending ${trendingTf}` : 'Trending' },
           { key: 'new', label: activeTab === 'new' ? `🌱 New ${newWindow}` : 'New' },
           { key: 'top', label: activeTab === 'top' ? `📊 Top` : 'Top' },
+          { key: 'bluechip', label: '💎 Vốn hóa lớn' },
         ].map((tab) => (
           <button
             key={tab.key}
             onClick={() => handleTabClick(tab.key)}
             style={{
-              flex: 1, padding: '8px 6px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+              flex: '1 1 40%', padding: '8px 6px', borderRadius: 8, fontSize: 12, fontWeight: 700,
               border: activeTab === tab.key ? 'none' : '1px solid var(--border)',
               background: activeTab === tab.key ? 'var(--primary)' : 'var(--surface-2)',
               color: activeTab === tab.key ? '#fff' : 'var(--text-muted)',
@@ -189,15 +218,34 @@ export default function TrendingList({ chain = 'solana' }) {
                 </div>
 
                 <div style={{ display: 'flex', gap: 10, marginTop: 6, fontSize: 10.5, color: 'var(--text-dim)' }}>
-                  <span>LIQ {formatCompactNumber(t.liquidityUsd)}</span>
-                  <span>VOL {formatCompactNumber(t.volumeH24)}</span>
-                  <span>MCAP {formatCompactNumber(t.fdv)}</span>
-                  <span style={{ color: RISK_COLOR[t.liquidityRisk?.level] || 'var(--text-dim)', marginLeft: 'auto' }}>
-                    ● {t.liquidityRisk?.level === 'safe' ? 'An toàn' : t.liquidityRisk?.level === 'danger' ? 'Báo động' : t.liquidityRisk?.level === 'volatile' ? 'Dễ bay' : t.liquidityRisk?.level === 'neutral' ? 'Trung tính' : 'N/A'}
-                  </span>
+                  {activeTab === 'bluechip' ? (
+                    <>
+                      <span>Vốn hóa {formatCompactNumber(t.marketCap)}</span>
+                      <span>VOL {formatCompactNumber(t.volumeH24)}</span>
+                      {t.rank && <span style={{ marginLeft: 'auto' }}>Hạng #{t.rank}</span>}
+                    </>
+                  ) : (
+                    <>
+                      <span>LIQ {formatCompactNumber(t.liquidityUsd)}</span>
+                      <span>VOL {formatCompactNumber(t.volumeH24)}</span>
+                      <span>MCAP {formatCompactNumber(t.fdv)}</span>
+                      <span style={{ color: RISK_COLOR[t.liquidityRisk?.level] || 'var(--text-dim)', marginLeft: 'auto' }}>
+                        ● {t.liquidityRisk?.level === 'safe' ? 'An toàn' : t.liquidityRisk?.level === 'danger' ? 'Báo động' : t.liquidityRisk?.level === 'volatile' ? 'Dễ bay' : t.liquidityRisk?.level === 'neutral' ? 'Trung tính' : 'N/A'}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
             );
+
+            // Tab Blue-chip: tra địa chỉ mint on-demand khi bấm, không có sẵn poolAddress
+            if (activeTab === 'bluechip') {
+              return (
+                <div key={t.id} onClick={() => handleBlueChipClick(t.id)} style={{ cursor: 'pointer' }}>
+                  {content}
+                </div>
+              );
+            }
 
             if (!t.mint) return <div key={t.poolAddress} style={{ opacity: 0.6, cursor: 'not-allowed' }}>{content}</div>;
             return (
